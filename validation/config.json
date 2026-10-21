@@ -1,3 +1,5 @@
 {
-  "macros": ["example.mac"]
+  "macros": [
+    "run.mac"
+  ]
 }
