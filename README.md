@@ -17,22 +17,18 @@ to the EURADOS Linac Action reference data (B. Caccia et al., *"A model
 validation scheme for Monte Carlo simulations of a medical linear
 accelerator"*, EURADOS Report 2020-05).
 
-## ⚠️ No JSON-generator script available
+## Validation
 
-Unlike the other repositories in this organization,
-`geant-config-generator/tests/geant4/medical_linac/` has **no `parser.py`**
-(only `params.conf`/`template.conf`, no `run.sh` either) — the JSON export
-for this test was never wired into the config-generator pipeline. This
-import therefore only brings in the Geant4 source code; `validation/parser.py`
-is left as the unmodified template placeholder (TODO) and needs to be
-written from scratch, following the pattern used by the other tests'
-`metadata()`/`parse()` functions.
+`geant-config-generator/tests/geant4/medical_linac/` never had a `parser.py`,
+so the JSON export was written from scratch: `validation/parser.py` turns the
+dose mesh of `macro/eurados_12MV_opt4.mac` into a central-axis depth-dose
+curve and a lateral profile at 10 cm depth, and `validation/EuradosExp.py`
+provides the EURADOS reference data. `macro/unit.mac` is the short smoke test
+run on every push. Details: [validation/README.md](validation/README.md).
 
-A second, unconnected candidate exists at
-`geant-validation-tests/src/g4med_elinac6MeV` (a GDML-based 6 MV linac
-model by S. Guatelli, 2021) — also with no config-generator counterpart. It
-was not imported here; worth a look if `medical_linac`'s own code proves
-hard to adapt.
+`src/DetectorConstruction.cc` includes the upstream Geant4 geometry fix of
+April 2024 (primary-collimator cone, target production cut), missing from the
+`geant-validation-tests` copy.
 
 ## Import notes
 
@@ -40,3 +36,5 @@ hard to adapt.
   in `geant-validation-tests/src/medical_linac`.
 - `macro/` contains the two macros found directly in that source tree
   (`run.mac`, `vis.mac`).
+- `src/DetectorConstruction.cc` then received the upstream fix `ee0b124ab43`
+  (Geant4 medical_linac-V11-02-00).
