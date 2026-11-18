@@ -17,6 +17,12 @@ threads. It also fixes the seeds and writes `dDep.txt` in the run directory.
 (`/DetectorConstruction/...`): the reference data hold only for the default
 set-up.
 
+The parser reads the dose mesh in either format, chosen by the file extension
+in `/score/dumpQuantityToFile`: the default Geant4 text dump (`.txt`) or the
+XML file written by `XMLScoreWriter` (`.xml`), which also stores the mesh
+geometry and the unit. Both contain the per-event sums used for the errors
+(see below). `metadata()` accepts only these two extensions.
+
 A 5 mm voxel on the axis receives about one energy deposit per 10⁶ primary
 electrons. That is why `template.conf` asked for 5·10¹⁰ events. The macro runs
 10⁹ events, about 1.5 h on 8–10 threads of a recent CPU (1.9·10⁵ events/s
