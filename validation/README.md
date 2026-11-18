@@ -12,7 +12,8 @@ EURADOS Report 2020-05).
 (`standard_opt4`, 12 MeV electrons with σ = 0.127 MeV, 5 mm dose mesh), but it
 is self-contained: it sets the gun after `/run/initialize`, because
 `ActionInitialization` creates the generator and its messenger in the worker
-threads. It also fixes the seeds and writes `dDep.txt` in the run directory.
+threads. It also fixes the seeds, sets the production cuts per region,
+and writes `dDep.xml` in the run directory.
 `metadata()` rejects macros that change the mesh or the geometry
 (`/DetectorConstruction/...`): the reference data hold only for the default
 set-up.

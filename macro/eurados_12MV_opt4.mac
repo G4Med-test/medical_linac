@@ -16,6 +16,16 @@
 
 /run/initialize
 
+# Production cuts per region
+/run/setCutForRegion ffR 1.5 mm
+/run/setCutForRegion TargetR 0.8 mm
+/run/setCutForRegion fullWaterPhantomR 100 um
+/run/setCutForRegion primaryCollimatorR 10. mm
+/run/setCutForRegion IonChamberR 1.5 mm
+/run/setCutForRegion VacWindowR 1.5 mm
+/run/setCutForRegion JawsXR 1.5 mm
+/run/setCutForRegion JawsYR 1.5 mm
+
 # Primary electron beam (same values as the PrimaryGeneratorMessenger defaults).
 # The generator is built by ActionInitialization: set it after /run/initialize.
 /PrimaryGenerator/gunMeanEnergy 12 MeV
@@ -35,4 +45,5 @@
 /run/printProgress 10000000
 /run/beamOn 1000000000
 
-/score/dumpQuantityToFile boxMesh_1 dDep dDep.txt
+#/score/dumpQuantityToFile boxMesh_1 dDep dDep.txt
+/score/dumpQuantityToFile boxMesh_1 dDep dDep.xml
