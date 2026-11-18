@@ -26,9 +26,10 @@
 /run/setCutForRegion JawsXR 1.5 mm
 /run/setCutForRegion JawsYR 1.5 mm
 
-# Primary electron beam (same values as the PrimaryGeneratorMessenger defaults).
+# Primary electron beam. Nominal energy 12 MeV; 11.6 MeV is the effective energy
+# that matches the EURADOS depth-dose data (tuned around the nominal value).
 # The generator is built by ActionInitialization: set it after /run/initialize.
-/PrimaryGenerator/gunMeanEnergy 12 MeV
+/PrimaryGenerator/gunMeanEnergy 11.6 MeV
 /PrimaryGenerator/gunStdEnergy 0.127 MeV
 /PrimaryGenerator/gunRadius 1 mm
 
