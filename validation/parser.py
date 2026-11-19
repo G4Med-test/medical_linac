@@ -27,6 +27,7 @@
 # propagated to each point (it is a common scale factor).
 import math
 import os
+import xml.etree.ElementTree as ET
 
 from geantval import energy_mev, getJSON, one_command, single_run
 
@@ -56,6 +57,8 @@ def metadata(commands):
     events = single_run(commands)
     for command, expected in MESH.items():
         value = " ".join(one_command(commands, command).split())
+        if command == "/score/quantity/doseDeposit" and value == expected + " Gy":
+            value = expected                 # explicit default unit is fine
         if value != expected:
             raise ValueError("Expected %s %s, got %s" % (command, expected, value))
     for command, value in commands:
@@ -64,8 +67,13 @@ def metadata(commands):
     mesh, quantity, filename = one_command(commands, "/score/dumpQuantityToFile").split()
     if (mesh, quantity) != (MESH["/score/create/boxMesh"], MESH["/score/quantity/doseDeposit"]):
         raise ValueError("Dump the dose mesh: /score/dumpQuantityToFile boxMesh_1 dDep <file>")
-    if os.path.isabs(filename):
+    # if os.path.isabs(filename):
+    # the portal runs the macro in /outputs: accept a relative name or /outputs/<file>
+    if os.path.isabs(filename) and os.path.dirname(filename) != "/outputs":
         raise ValueError("Write the dose file in the run directory: " + filename)
+    filename = os.path.basename(filename) if os.path.isabs(filename) else filename
+    if not filename.endswith((".txt", ".xml")):
+        raise ValueError("The dose file must be .txt or .xml: " + filename)
     return {"TEST": "medical_linac",
             "PHYSLIST": one_command(commands, "/physics/addPhysics"),
             "ENERGY": energy_mev(one_command(commands, "/PrimaryGenerator/gunMeanEnergy")),
@@ -75,6 +83,8 @@ def metadata(commands):
 
 def read_mesh(path, nevents):
     """Return {(iX, iY, iZ): (dose, sigma)} in Gy, total over the run."""
+    if path.endswith(".xml"):
+        return read_mesh_xml(path, nevents)
     voxels = {}
     with open(path) as f:
         for line in f:
@@ -84,6 +94,29 @@ def read_mesh(path, nevents):
             total, total2 = float(total), float(total2)
             sigma = math.sqrt(max(total2 - total * total / nevents, 0.))
             voxels[int(ix), int(iy), int(iz)] = (total, sigma)
+    if len(voxels) != NBIN ** 3:
+        raise ValueError("Expected %d voxels in %s, found %d" % (NBIN ** 3, path, len(voxels)))
+    return voxels
+
+
+def read_mesh_xml(path, nevents):
+    """As read_mesh, for the XML file written by XMLScoreWriter (.xml dump)."""
+    root = ET.parse(path).getroot()
+    geometry, quantity = root.find("geometry"), root.find("quantity")
+    # the XML carries the mesh geometry: check it against the expected mesh
+    nbins = tuple(int(geometry.find("nBins").get(a)) for a in "xyz")
+    half = tuple(float(geometry.find("halfSize").get(a)) for a in "xyz")
+    centre = tuple(float(geometry.find("translation").get(a)) for a in "xyz")
+    if nbins != (NBIN,) * 3 or half != (127.5,) * 3 or centre != (0., 0., 130.):
+        raise ValueError("Unexpected mesh in %s: nBins %s, halfSize %s mm, translation %s mm"
+                         % (path, nbins, half, centre))
+    if quantity.get("unit") != "Gy" or float(quantity.get("factor")) != 1.:
+        raise ValueError("Expected dose in Gy with factor 1 in " + path)
+    voxels = {}
+    for v in root.iter("voxel"):
+        total, total2 = float(v.get("value")), float(v.get("value2"))
+        sigma = math.sqrt(max(total2 - total * total / nevents, 0.))
+        voxels[int(v.get("ix")), int(v.get("iy")), int(v.get("iz"))] = (total, sigma)
     if len(voxels) != NBIN ** 3:
         raise ValueError("Expected %d voxels in %s, found %d" % (NBIN ** 3, path, len(voxels)))
     return voxels

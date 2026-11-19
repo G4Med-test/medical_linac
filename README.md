@@ -10,10 +10,12 @@ A. Occhigrossi, S. Guatelli, M. Piergentili, M.G. Pia, F. Foppiano.
 
 ## 🔬 What this test does
 
-An e- beam hits the linac target/flattening-filter assembly, producing a
-megavoltage bremsstrahlung X-ray beam; the dose deposited in a water phantom
-is scored on a 3-D mesh (`/score/create/boxMesh`, 5 mm voxels) and compared
-to the EURADOS Linac Action reference data (B. Caccia et al., *"A model
+An e- beam hits the linac target, producing a megavoltage bremsstrahlung X-ray beam,
+which is then shaped by the primary collimator, the flattening filter (when present),
+the secondary collimator, and the jaws, which define the field size (10×10 cm² by
+default). The dose deposited in a water phantom is scored on a 3-D mesh (`/score/
+create/boxMesh`, 5 mm voxels) and compared to the EURADOS Linac Action reference data
+(B. Caccia et al., *"A model
 validation scheme for Monte Carlo simulations of a medical linear
 accelerator"*, EURADOS Report 2020-05).
 

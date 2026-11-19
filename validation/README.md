@@ -9,13 +9,24 @@ EURADOS Report 2020-05).
 ## Run
 
 `macro/eurados_12MV_opt4.mac` follows the original `template.conf`
-(`standard_opt4`, 12 MeV electrons with σ = 0.127 MeV, 5 mm dose mesh), but it
+(`standard_opt4`, σ = 0.127 MeV, 5 mm dose mesh), with the electron energy set
+to 11.6 MeV instead of the nominal 12 MeV: the effective energy that matches
+the measured depth dose, found by tuning around the nominal value. It
+
 is self-contained: it sets the gun after `/run/initialize`, because
 `ActionInitialization` creates the generator and its messenger in the worker
-threads. It also fixes the seeds and writes `dDep.txt` in the run directory.
+threads. It also fixes the seeds, sets the production cuts per region,
+and writes `dDep.txt` in the run directory (with a `.xml` file name the dose
+is written in XML by `XMLScoreWriter`, which the parser reads as well).
 `metadata()` rejects macros that change the mesh or the geometry
 (`/DetectorConstruction/...`): the reference data hold only for the default
 set-up.
+
+The parser reads the dose mesh in either format, chosen by the file extension
+in `/score/dumpQuantityToFile`: the default Geant4 text dump (`.txt`) or the
+XML file written by `XMLScoreWriter` (`.xml`), which also stores the mesh
+geometry and the unit. Both contain the per-event sums used for the errors
+(see below). `metadata()` accepts only these two extensions.
 
 A 5 mm voxel on the axis receives about one energy deposit per 10⁶ primary
 electrons. That is why `template.conf` asked for 5·10¹⁰ events. The macro runs
@@ -40,7 +51,7 @@ normalization point is a common scale factor: it is reported as the
 
 Two `SCATTER2D` records, `percentage depth dose` (depth 5–255 mm) and
 `lateral dose profile` (−125…125 mm at 100 mm depth), with target `water`,
-beam `e-` at 12 MeV and parameters `field size`, `SSD`, `voxel`, `events`
+beam `e-` at the energy set in the macro (11.6 MeV) and parameters `field size`, `SSD`, `voxel`, `events`
 and `normalization uncertainty`.
 
 ## Known limitation: dose outside the field
