@@ -46,5 +46,6 @@
 /run/printProgress 10000000
 /run/beamOn 1000000000
 
-#/score/dumpQuantityToFile boxMesh_1 dDep dDep.txt
-/score/dumpQuantityToFile boxMesh_1 dDep dDep.xml
+/score/dumpQuantityToFile boxMesh_1 dDep dDep.txt
+# XML output (XMLScoreWriter), read by the parser as well:
+# /score/dumpQuantityToFile boxMesh_1 dDep dDep.xml

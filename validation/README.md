@@ -16,7 +16,8 @@ the measured depth dose, found by tuning around the nominal value. It
 is self-contained: it sets the gun after `/run/initialize`, because
 `ActionInitialization` creates the generator and its messenger in the worker
 threads. It also fixes the seeds, sets the production cuts per region,
-and writes `dDep.xml` in the run directory.
+and writes `dDep.txt` in the run directory (with a `.xml` file name the dose
+is written in XML by `XMLScoreWriter`, which the parser reads as well).
 `metadata()` rejects macros that change the mesh or the geometry
 (`/DetectorConstruction/...`): the reference data hold only for the default
 set-up.
