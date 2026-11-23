@@ -34,6 +34,7 @@
 #include "ActionInitialization.hh"
 #include "DetectorConstruction.hh"
 #include "PhysicsList.hh"
+#include "XMLScoreWriter.hh"
 
 #include "G4RunManagerFactory.hh"
 #include "G4UImanager.hh"
@@ -58,7 +59,11 @@ int main(int argc, char** argv)
   runManager -> SetUserInitialization(new ActionInitialization());
 
 
-  G4ScoringManager::GetScoringManager();
+  // G4ScoringManager::GetScoringManager();
+  // dose mesh dumped in XML (XMLScoreWriter) when the file name ends in .xml
+  G4ScoringManager* scoringManager = G4ScoringManager::GetScoringManager();
+  scoringManager -> SetScoreWriter(new XMLScoreWriter());
+
   // Initialize visualization
   //
   G4VisManager* visManager = new G4VisExecutive;
